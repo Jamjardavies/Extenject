@@ -8,7 +8,7 @@ namespace Zenject.MemoryPoolMonitor
 {
     public class MpmWindow : ZenjectEditorWindow
     {
-        [MenuItem("Window/Zenject Pool Monitor")]
+        [MenuItem("Window/Zenject/Pool Monitor")]
         public static MpmWindow GetOrCreateWindow()
         {
             var window = EditorWindow.GetWindow<MpmWindow>();
