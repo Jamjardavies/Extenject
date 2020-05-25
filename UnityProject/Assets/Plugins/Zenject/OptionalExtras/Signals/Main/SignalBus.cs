@@ -8,6 +8,39 @@ using UniRx;
 
 namespace Zenject
 {
+    // James Davies (25/05/2020): Added for pointing towards the SignalMonitor
+#if UNITY_EDITOR
+    public interface ISignalMonitor
+    {
+        void SignalFired(object signal);
+    }
+
+    // James Davies (25/05/2020): Maybe think of changing this to use the container, so you can write a SignalMonitor you could use in-game,
+    //                            and write a wrapper for the Editor.
+    public static class SignalMonitorRegistry
+    {
+        private static readonly List<ISignalMonitor> SignalMonitors = new List<ISignalMonitor>();
+
+        public static void AddSignalMonitor(ISignalMonitor monitor)
+        {
+            SignalMonitors.Add(monitor);
+        }
+
+        public static void RemoveSignalMonitor(ISignalMonitor monitor)
+        {
+            SignalMonitors.Remove(monitor);
+        }
+
+        public static void SignalFired(object signal)
+        {
+            foreach (ISignalMonitor monitor in SignalMonitors)
+            {
+                monitor.SignalFired(signal);
+            }
+        }
+    }
+#endif
+
     public class SignalBus : ILateDisposable
     {
         readonly SignalSubscription.Pool _subscriptionPool;
@@ -202,6 +235,10 @@ namespace Zenject
                 }
 
                 declaration.Fire(signal);
+
+#if UNITY_EDITOR
+                SignalMonitorRegistry.SignalFired(signal);
+#endif
             }
         }
 
